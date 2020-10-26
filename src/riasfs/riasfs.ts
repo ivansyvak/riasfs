@@ -42,24 +42,29 @@ class RiasFS implements vscode.FileSystemProvider {
         throw vscode.FileSystemError.FileNotFound();
     }
 
-    writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
+    writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }, uid?: string): void {
         const basename = path.posix.basename(uri.path);
         const parent = this._lookupParentDirectory(uri);
+
         let entry = parent.entries.get(basename);
         if (entry instanceof Directory) {
             throw vscode.FileSystemError.FileIsADirectory(uri);
         }
+        
         if (!entry && !options.create) {
             throw vscode.FileSystemError.FileNotFound(uri);
         }
+
         if (entry && options.create && !options.overwrite) {
             throw vscode.FileSystemError.FileExists(uri);
         }
+
         if (!entry) {
             entry = new File(basename);
             parent.entries.set(basename, entry);
             this._fireSoon({ type: vscode.FileChangeType.Created, uri });
         }
+        
         entry.mtime = Date.now();
         entry.size = content.byteLength;
         entry.data = content;

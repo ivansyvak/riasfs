@@ -1,11 +1,12 @@
-import { rejects } from "assert";
-import { resolve } from "dns";
+import * as vscode from 'vscode';
+
+import { CONFIG } from "../config";
 
 const axios = require('axios');
 
 export async function fetch(action: string, params?: any) {
   return new Promise((resolve, reject) => {
-    axios.post('http://vm-dev/v1/metadataManager.php', {action, params})
+    axios.post(CONFIG.apiURL, {action, params})
       .then(onSuccess)
       .catch(onError);
 
@@ -19,8 +20,8 @@ export async function fetch(action: string, params?: any) {
     }
 
     function onError(e: any) {
+      vscode.window.showErrorMessage(e.toString());
       reject(e.toString());
     }
   })
-  
 }

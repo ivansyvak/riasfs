@@ -4,6 +4,8 @@ class MetadataService {
   private _metadata: any[] = [];
   private _indexed: {[key: string]: any} = {};
 
+  private _byURI: {[key: string]: any} = {};
+
   public get metadata() {
     return this._metadata;
   }
@@ -19,6 +21,7 @@ class MetadataService {
 
         for (let i in data) {
           let row = data[i];
+          
           this._indexed[row.id] = row;
           this._indexed[row.name] = row;
         }
@@ -31,6 +34,9 @@ class MetadataService {
   public getOne(id: (string | number)) {
     return this._indexed[id];
   }
+
+
+  
 
 }
 

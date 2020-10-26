@@ -92,6 +92,9 @@ class RiasFSBuilder {
       riasfs.createDirectory(this.resolvePath(metadata, formModulePath));
 
       let f = form as any;
+      const formData = JSON.stringify(f.data);
+      riasfs.writeFile(this.resolvePath(metadata, `${formModulePath}/form.json`), Buffer.from(formData), { create: true, overwrite: true });
+
       if (f.module && f.module.n) {
         for (let func of f.module.n) {
 
