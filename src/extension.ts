@@ -4,7 +4,6 @@ import * as vscode from 'vscode';
 import { CONFIG } from './config';
 import { metadataService } from './services/metadata.service';
 import { riasfs } from './riasfs/riasfs';
-import { fsBuilder } from './services/fs-builder.service';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -24,7 +23,6 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(vscode.commands.registerCommand('riasfs.generate', async () => {
       await metadataService.init()
-      fsBuilder.build();
   }));
 
 }

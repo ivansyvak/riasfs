@@ -1,4 +1,4 @@
-import { ObjectMetadata } from "./object.metadata";
+import { ObjectMetadata } from "./common/object.metadata";
 
 export class DocumentsMetadata extends ObjectMetadata {
 

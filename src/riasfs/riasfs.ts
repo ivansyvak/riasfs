@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { fsBuilder } from '../services/fs-builder.service';
 
 import { Directory } from './directory';
 import { File } from './file';
@@ -20,9 +19,9 @@ class RiasFS implements vscode.FileSystemProvider {
         return new Promise(async (resolve) => {
             const entry = this._lookupAsDirectory(uri, false);
             const splitted = uri.path.split('/');
-            if (splitted[splitted.length - 1] == 'forms') {
-                await fsBuilder.addMetadataForms((entry as Directory).metadataId);
-            }
+            // if (splitted[splitted.length - 1] == 'forms') {
+            //     await fsBuilder.addMetadataForms((entry as Directory));
+            // }
 
             const result: [string, vscode.FileType][] = [];
             for (const [name, child] of entry.entries) {
@@ -42,7 +41,7 @@ class RiasFS implements vscode.FileSystemProvider {
         throw vscode.FileSystemError.FileNotFound();
     }
 
-    writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }, uid?: string): void {
+    writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
         const basename = path.posix.basename(uri.path);
         const parent = this._lookupParentDirectory(uri);
 
@@ -109,12 +108,12 @@ class RiasFS implements vscode.FileSystemProvider {
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri: dirname }, { uri, type: vscode.FileChangeType.Deleted });
     }
 
-    createDirectory(uri: vscode.Uri, metadataId?: (string | number)): void {
+    createDirectory(uri: vscode.Uri): void {
         const basename = path.posix.basename(uri.path);
         const dirname = uri.with({ path: path.posix.dirname(uri.path) });
         const parent = this._lookupAsDirectory(dirname, false);
 
-        const entry = new Directory(basename, metadataId);
+        const entry = new Directory(basename);
         parent.entries.set(entry.name, entry);
         parent.mtime = Date.now();
         parent.size += 1;

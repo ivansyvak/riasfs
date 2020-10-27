@@ -12,7 +12,7 @@ export class Directory implements vscode.FileStat {
     name: string;
     entries: Map<string, File | Directory>;
 
-    constructor(name: string, public metadataId?: (string | number | undefined)) {
+    constructor(name: string) {
         this.type = vscode.FileType.Directory;
         this.ctime = Date.now();
         this.mtime = Date.now();
