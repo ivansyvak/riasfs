@@ -61,7 +61,7 @@ export class Metadata implements FSDirectory {
   }
 
   generateFiles() {
-    riasfs.createDirectory(vscode.Uri.parse(this.getPath()));
+    riasfs.createDirectory(vscode.Uri.parse(this.getPath()), this);
     for (let ch of this.children) {
       ch.generateFiles();
     }

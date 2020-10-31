@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { FSDirectory, FSItem } from '../common/fs';
 
 import { Directory } from './directory';
 import { File } from './file';
@@ -18,10 +19,8 @@ class RiasFS implements vscode.FileSystemProvider {
     readDirectory(uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
         return new Promise(async (resolve) => {
             const entry = this._lookupAsDirectory(uri, false);
-            const splitted = uri.path.split('/');
-            // if (splitted[splitted.length - 1] == 'forms') {
-            //     await fsBuilder.addMetadataForms((entry as Directory));
-            // }
+            
+            await entry.beforeRead();
 
             const result: [string, vscode.FileType][] = [];
             for (const [name, child] of entry.entries) {
@@ -41,7 +40,7 @@ class RiasFS implements vscode.FileSystemProvider {
         throw vscode.FileSystemError.FileNotFound();
     }
 
-    writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
+    writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }, fsItem?: FSItem): void {
         const basename = path.posix.basename(uri.path);
         const parent = this._lookupParentDirectory(uri);
 
@@ -59,7 +58,7 @@ class RiasFS implements vscode.FileSystemProvider {
         }
 
         if (!entry) {
-            entry = new File(basename);
+            entry = new File(basename, fsItem);
             parent.entries.set(basename, entry);
             this._fireSoon({ type: vscode.FileChangeType.Created, uri });
         }
@@ -108,12 +107,12 @@ class RiasFS implements vscode.FileSystemProvider {
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri: dirname }, { uri, type: vscode.FileChangeType.Deleted });
     }
 
-    createDirectory(uri: vscode.Uri): void {
+    createDirectory(uri: vscode.Uri, fsDirectory?: FSDirectory): void {
         const basename = path.posix.basename(uri.path);
         const dirname = uri.with({ path: path.posix.dirname(uri.path) });
         const parent = this._lookupAsDirectory(dirname, false);
 
-        const entry = new Directory(basename);
+        const entry = new Directory(basename, fsDirectory);
         parent.entries.set(entry.name, entry);
         parent.mtime = Date.now();
         parent.size += 1;

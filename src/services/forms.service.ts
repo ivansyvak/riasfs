@@ -1,6 +1,8 @@
-class FormsService {
-  async getForms(metadataId: (string | number)) {
+import { fetch } from "../common/fetch";
 
+class FormsService {
+  async getForms(owner: (string | number)) {
+    return fetch('getForms', {owner})
   }
 
   

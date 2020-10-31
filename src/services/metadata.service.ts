@@ -1,4 +1,3 @@
-import { strict } from "assert";
 import { fetch } from "../common/fetch";
 import { AccumulationRegistersMetadata } from "../metadata/accumulation-registers.metadata";
 import { ApplicationMetadata } from "../metadata/application.metadata";

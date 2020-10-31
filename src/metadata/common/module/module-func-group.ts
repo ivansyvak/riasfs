@@ -1,3 +1,6 @@
+import * as vscode from 'vscode';
+import { riasfs } from '../../../riasfs/riasfs';
+
 import { ModuleFunc } from "./module-func";
 import { ModuleItem } from "./module-item";
 
@@ -17,16 +20,24 @@ export class ModuleFuncGroup extends ModuleItem {
       let moduleItem: (ModuleItem | null);
       switch (row.type as ModuleType) {
         case "ModuleFunc":
-          moduleItem = new ModuleFunc();
+          moduleItem = new ModuleFunc(this);
           break;
 
         case "ModuleFuncGroup":
-          moduleItem = new ModuleFuncGroup();
+          moduleItem = new ModuleFuncGroup(this);
           break;
       }
 
       moduleItem.build(row);
       this.children.push(moduleItem);
+    }
+  }
+
+  generateFiles() {
+    riasfs.createDirectory(vscode.Uri.parse(this.getPath()), this);
+    
+    for (let ch of this.children) {
+      ch.generateFiles();
     }
   }
 }
